@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"path/filepath"
 	"slices"
 	"sync"
 
@@ -258,9 +257,9 @@ func (s *DeviceState) applyConfig(config *configapi.RuntimeSpecEditConfig, resul
 		perDeviceEdits[result.Device] = &cdiapi.ContainerEdits{
 			ContainerEdits: &cdispec.ContainerEdits{
 				Hooks: []*cdispec.Hook{
-					&cdispec.Hook{
+					{
 						HookName: "prestart",
-						Path:     filepath.Join(DriverPluginPath, "oci-hook"),
+						Path:     OCIHookPath,
 						Env:      env,
 					},
 				},

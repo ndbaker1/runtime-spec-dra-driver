@@ -69,13 +69,6 @@ func newApp() *cli.App {
 			Destination: &flags.cdiRoot,
 			EnvVars:     []string{"CDI_ROOT"},
 		},
-		&cli.IntFlag{
-			Name:        "num-devices",
-			Usage:       "The number of devices to be generated.",
-			Value:       8,
-			Destination: &flags.numDevices,
-			EnvVars:     []string{"NUM_DEVICES"},
-		},
 		&cli.StringFlag{
 			Name:        "kubelet-registrar-directory-path",
 			Usage:       "Absolute path to the directory where kubelet stores plugin registrations.",
@@ -102,8 +95,8 @@ func newApp() *cli.App {
 	cliFlags = append(cliFlags, flags.loggingConfig.Flags()...)
 
 	app := &cli.App{
-		Name:            "dra-example-kubeletplugin",
-		Usage:           "dra-example-kubeletplugin implements a DRA driver plugin.",
+		Name:            "runtime-spec-dra-kubeletplugin",
+		Usage:           "runtime-spec-dra-kubeletplugin is a DRA driver plugin that allows of overriding oci runtime spec properties.",
 		ArgsUsage:       " ",
 		HideHelpCommand: true,
 		Flags:           cliFlags,

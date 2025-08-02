@@ -1,7 +1,6 @@
 GOLANG_VERSION ?= 1.24.4
 
-DRIVER_NAME ?= dra-example-driver
-MODULE ?= sigs.k8s.io/$(DRIVER_NAME)
+DRIVER_NAME ?= resource-spec-dra-driver
 
 VERSION  ?= v0.1.0
 vVERSION := v$(VERSION:v%=%)

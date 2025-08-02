@@ -15,6 +15,10 @@ import (
 	"k8s.io/klog/v2"
 )
 
+var (
+	OCIHookPath = filepath.Join(DriverPluginPath, "oci-hook")
+)
+
 type driver struct {
 	client      coreclientset.Interface
 	helper      *kubeletplugin.Helper
@@ -88,7 +92,7 @@ func (d *driver) installOCIHook() error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(filepath.Join(DriverPluginPath, "oci-hook"), data, 0755)
+	return os.WriteFile(OCIHookPath, data, 0755)
 }
 
 func (d *driver) PrepareResourceClaims(ctx context.Context, claims []*resourceapi.ResourceClaim) (map[types.UID]kubeletplugin.PrepareResult, error) {
