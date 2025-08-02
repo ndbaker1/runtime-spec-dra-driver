@@ -1,0 +1,64 @@
+apiVersion: resource.k8s.io/v1beta1
+kind: ResourceClaimTemplate
+metadata:
+  name: runtime-spec-hook
+spec:
+  spec:
+    devices:
+      requests:
+      - name: example
+        deviceClassName: runtime-spec.io
+      config:
+      - requests: [example]
+        opaque:
+          driver: runtime-spec.io
+          parameters:
+            apiVersion: dra.runtime-spec.io/v1alpha1
+            kind: RuntimeSpecEditConfig
+            spec:
+              {
+                "linux": {
+                  "resources": {
+                    "unified": {
+                      "io.max": "259:0 rbps=2097152 wiops=120\n253:0 rbps=2097152 wiops=120",
+                    }
+                  }
+                }
+              }
+
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: rs1
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: runtime-spec-dra-test
+  template:
+    metadata:
+      labels:
+        app: runtime-spec-dra-test
+    spec:
+      affinity:
+        # force the pods to be allocated to different nodes
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values: [runtime-spec-dra-test]
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - name: ctr0
+        image: ubuntu:22.04
+        command: ["bash", "-c"]
+        args: ["export; trap 'exit 0' TERM; sleep 9999 & wait"]
+        resources:
+          claims:
+          - name: runtime-spec-hook
+      resourceClaims:
+      - name: runtime-spec-hook
+        resourceClaimTemplateName: runtime-spec-hook

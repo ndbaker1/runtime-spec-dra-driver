@@ -1,0 +1,9 @@
+---
+apiVersion: resource.k8s.io/v1beta1
+kind: DeviceClass
+metadata:
+  name: runtime-spec.io
+spec:
+  selectors:
+  - cel: 
+      expression: "device.driver == 'runtime-spec.io'"
