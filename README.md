@@ -6,7 +6,7 @@ into pods via configuration associated with a `ResourceClaim`.
 It abuses the CDI container edits API to inject an oci hook into the container
 creation lifecycle which acts based on a user-provided config.
 
-## Testing
+## Quickstart
 
 ```bash
 export REGISTRY=
@@ -20,4 +20,7 @@ helm upgrade -i runtime-spec-dra-driver deployments/helm/runtime-spec-dra-driver
   --set image.pullPolicy=Always \
   --set image.repository=$REGISTRY/$DRIVER_NAME \
   --set image.tag=$VERSION \
+
+# attempt some of the test cases
+kubectl apply -f demo/
 ```
