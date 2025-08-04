@@ -258,7 +258,7 @@ func (s *DeviceState) applyConfig(config *configapi.RuntimeSpecEditConfig, resul
 			ContainerEdits: &cdispec.ContainerEdits{
 				Hooks: []*cdispec.Hook{
 					{
-						HookName: "prestart",
+						HookName: "createRuntime", // formerly known as prestart
 						Path:     OCIHookPath,
 						Env:      env,
 					},

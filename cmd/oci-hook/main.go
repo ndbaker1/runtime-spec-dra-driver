@@ -10,10 +10,6 @@ import (
 	spec "github.com/opencontainers/runtime-spec/specs-go"
 )
 
-type Hook struct {
-	Spec *spec.Spec `json:"spec"`
-}
-
 func main() {
 	err := run()
 	if err != nil {
@@ -50,6 +46,17 @@ func run() error {
 	if err := json.Unmarshal(runtimeSpecData, &runtimeSpec); err != nil {
 		return fmt.Errorf("parsing current oci runtime spec: %v", err)
 	}
+
+	// TODO: this does not affect the container's actual cgroup config today
+	// because merging the specs happens after the container config is loaded by
+	// runc. this hook would if it were run whilst still in containerd's scope,
+	// but that requires static, AoT configuration on the node. Since this
+	// approach is trying to abuse the CDI `ContainerEdits.Hooks` field, we are
+	// restricted by hooks inside runc rather than containerd.
+	//
+	// however, this hook approach will still work as long as we directly
+	// configure cgroupv2, like writing the appropriate info into unified fields
+	// such as io.max for example.
 
 	if err := mergo.Merge(&runtimeSpec, &runtimeSpecAdditions, mergo.WithOverride); err != nil {
 		return fmt.Errorf("merging oci runtime spec: %w", err)

@@ -19,8 +19,11 @@ spec:
               {
                 "linux": {
                   "resources": {
+                    "memory": {
+                      "limit": 100000
+                    },
                     "unified": {
-                      "io.max": "259:0 rbps=2097152 wiops=120\n253:0 rbps=2097152 wiops=120",
+                      "io.max": "259:0 rbps=2097152 wiops=120\n253:0 rbps=2097152 wiops=120"
                     }
                   }
                 }
@@ -32,7 +35,7 @@ kind: ReplicaSet
 metadata:
   name: rs1
 spec:
-  replicas: 5
+  replicas: 1
   selector:
     matchLabels:
       app: runtime-spec-dra-test
