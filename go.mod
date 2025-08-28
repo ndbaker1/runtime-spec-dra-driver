@@ -17,7 +17,7 @@ require (
 	k8s.io/dynamic-resource-allocation v0.33.0
 	k8s.io/klog/v2 v2.130.1
 	k8s.io/kubelet v0.33.0
-	k8s.io/kubernetes v1.33.2
+	k8s.io/kubernetes v1.33.4
 	tags.cncf.io/container-device-interface v0.8.0
 	tags.cncf.io/container-device-interface/specs-go v0.8.0
 )
