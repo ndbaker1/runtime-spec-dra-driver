@@ -2,5 +2,10 @@
 vendor/
 [._]*.sw[a-p]
 
+# Build artifacts
 driver_image.tar
 *.tgz
+
+# Binary outputs
+/dra-kubelet-plugin
+/nri-plugin

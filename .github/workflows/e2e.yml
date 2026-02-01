@@ -1,0 +1,38 @@
+name: E2E Tests
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  e2e:
+    # Run on push to any branch, or on PR approval
+    if: >
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request_review' && github.event.review.state == 'approved')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Install kind
+        run: |
+          go install sigs.k8s.io/kind@latest
+
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/kubectl
+
+      - name: Run E2E tests
+        run: make test-e2e
