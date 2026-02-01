@@ -66,6 +66,22 @@ kubeletPlugin:
       # Set to a negative value to disable the service and the probe.
       healthcheckPort: 51515
 
+# NRI (Node Resource Interface) plugin configuration
+nri:
+  # Enable NRI plugin for applying OCI runtime spec modifications
+  enabled: true
+  # NRI socket path - must match containerd/CRI-O NRI configuration
+  socketPath: /var/run/nri/nri.sock
+  # Plugin name registered with NRI
+  pluginName: runtime-spec-dra
+  # Plugin index determines execution order (lower = earlier)
+  pluginIdx: "10"
+  containers:
+    nriPlugin:
+      securityContext:
+        privileged: true
+      resources: {}
+
 webhook:
   enabled: false
   servicePort: 443

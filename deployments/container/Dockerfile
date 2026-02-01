@@ -13,4 +13,4 @@ RUN make PREFIX=/artifacts cmds
 FROM ${BASE_IMAGE}
 
 COPY --from=build /artifacts/dra-kubelet-plugin /usr/bin/dra-kubelet-plugin
-COPY --from=build /artifacts/oci-hook           /usr/bin/oci-hook
+COPY --from=build /artifacts/nri-plugin         /usr/bin/nri-plugin

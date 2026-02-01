@@ -5,6 +5,7 @@ export IMAGE_GIT_TAG ?= $(shell git describe --tags --always --dirty --match 'v*
 export CHART_GIT_TAG ?= $(shell git describe --tags --always --dirty --match 'chart/*')
 
 include $(CURDIR)/common.mk
+include $(CURDIR)/e2e.mk
 
 CMDS := $(patsubst ./cmd/%/,%,$(sort $(dir $(wildcard ./cmd/*/))))
 CMD_TARGETS := $(patsubst %,cmd-%, $(CMDS))

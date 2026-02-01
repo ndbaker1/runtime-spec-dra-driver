@@ -243,10 +243,9 @@ func (s *DeviceState) unprepareDevices(claimUID string, devices PreparedDevices)
 
 // applyConfig applies a configuration to a set of device allocation results.
 //
-// In this example driver there is no actual configuration applied. We simply
-// define a set of environment variables to be injected into the containers
-// that include a given device. A real driver would likely need to do some sort
-// of hardware configuration as well, based on the config passed in.
+// The configuration is passed to containers via the OCI_RUNTIME_SPEC environment
+// variable. The NRI plugin reads this environment variable during the CreateContainer
+// phase and applies the spec adjustments (including unified cgroup parameters).
 func (s *DeviceState) applyConfig(config *configapi.RuntimeSpecEditConfig, results []*resourceapi.DeviceRequestAllocationResult) (PerDeviceCDIContainerEdits, error) {
 	perDeviceEdits := make(PerDeviceCDIContainerEdits)
 
@@ -254,15 +253,9 @@ func (s *DeviceState) applyConfig(config *configapi.RuntimeSpecEditConfig, resul
 		env := []string{
 			fmt.Sprintf("OCI_RUNTIME_SPEC=%s", string(config.Spec.Raw)),
 		}
+
 		perDeviceEdits[result.Device] = &cdiapi.ContainerEdits{
 			ContainerEdits: &cdispec.ContainerEdits{
-				Hooks: []*cdispec.Hook{
-					{
-						HookName: "createRuntime", // formerly known as prestart
-						Path:     OCIHookPath,
-						Env:      env,
-					},
-				},
 				Env: env,
 			},
 		}

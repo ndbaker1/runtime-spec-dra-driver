@@ -1,0 +1,40 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: runtime-spec-dra-test
+featureGates:
+  DynamicResourceAllocation: true
+# Patch containerd on all nodes to enable NRI
+containerdConfigPatches:
+- |-
+  [plugins."io.containerd.nri.v1.nri"]
+    disable = false
+- |-
+  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+    SystemdCgroup = true
+nodes:
+- role: control-plane
+  kubeadmConfigPatches:
+  - |
+    kind: InitConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        feature-gates: "DynamicResourceAllocation=true"
+  - |
+    kind: ClusterConfiguration
+    apiServer:
+      extraArgs:
+        feature-gates: "DynamicResourceAllocation=true"
+        runtime-config: "resource.k8s.io/v1beta1=true"
+    scheduler:
+      extraArgs:
+        feature-gates: "DynamicResourceAllocation=true"
+    controllerManager:
+      extraArgs:
+        feature-gates: "DynamicResourceAllocation=true"
+- role: worker
+  kubeadmConfigPatches:
+  - |
+    kind: JoinConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        feature-gates: "DynamicResourceAllocation=true"

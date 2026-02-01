@@ -84,6 +84,25 @@ spec:
           mountPath: {{ .Values.kubeletPlugin.kubeletPluginsDirectoryPath | quote }}
         - name: cdi
           mountPath: /var/run/cdi
+      {{- if .Values.nri.enabled }}
+      # NRI Plugin container - applies OCI runtime spec modifications via NRI
+      - name: nri-plugin
+        securityContext:
+          {{- toYaml .Values.nri.containers.nriPlugin.securityContext | nindent 10 }}
+        image: {{ include "runtime-spec-dra-driver.fullimage" . }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["nri-plugin"]
+        args:
+        - "-name={{ .Values.nri.pluginName }}"
+        - "-idx={{ .Values.nri.pluginIdx }}"
+        - "-socket={{ .Values.nri.socketPath }}"
+        - "-v=2"
+        resources:
+          {{- toYaml .Values.nri.containers.nriPlugin.resources | nindent 10 }}
+        volumeMounts:
+        - name: nri-socket
+          mountPath: /var/run/nri
+      {{- end }}
       volumes:
       - name: plugins-registry
         hostPath:
@@ -94,6 +113,12 @@ spec:
       - name: cdi
         hostPath:
           path: /var/run/cdi
+      {{- if .Values.nri.enabled }}
+      - name: nri-socket
+        hostPath:
+          path: /var/run/nri
+          type: DirectoryOrCreate
+      {{- end }}
       {{- with .Values.kubeletPlugin.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

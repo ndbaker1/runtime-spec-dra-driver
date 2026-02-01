@@ -1,0 +1,41 @@
+---
+apiVersion: resource.k8s.io/v1beta1
+kind: ResourceClaimTemplate
+metadata:
+  name: io-throttle-claim
+spec:
+  spec:
+    devices:
+      requests:
+      - name: cfg
+        deviceClassName: runtime-spec.io
+      config:
+      - requests: [cfg]
+        opaque:
+          driver: runtime-spec.io
+          parameters:
+            apiVersion: dra.runtime-spec.io/v1alpha1
+            kind: RuntimeSpecEditConfig
+            spec:
+              linux:
+                resources:
+                  unified:
+                    "io.max": "254:16 wbps=${LIMIT_BPS}"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: io-throttle-test-pod
+  labels:
+    test: io-throttle
+spec:
+  containers:
+  - name: test
+    image: busybox:latest
+    command: ["sleep", "600"]
+    resources:
+      claims:
+      - name: cfg
+  resourceClaims:
+  - name: cfg
+    resourceClaimTemplateName: io-throttle-claim

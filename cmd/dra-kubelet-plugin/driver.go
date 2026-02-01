@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"maps"
-	"os"
-	"path/filepath"
 
 	resourceapi "k8s.io/api/resource/v1beta1"
 	"k8s.io/apimachinery/pkg/types"
@@ -13,10 +11,6 @@ import (
 	"k8s.io/dynamic-resource-allocation/kubeletplugin"
 	"k8s.io/dynamic-resource-allocation/resourceslice"
 	"k8s.io/klog/v2"
-)
-
-var (
-	OCIHookPath = filepath.Join(DriverPluginPath, "oci-hook")
 )
 
 type driver struct {
@@ -63,10 +57,6 @@ func NewDriver(ctx context.Context, config *Config) (*driver, error) {
 		},
 	}
 
-	if err := driver.installOCIHook(); err != nil {
-		return nil, fmt.Errorf("install oci hook: %w", err)
-	}
-
 	driver.healthcheck, err = startHealthcheck(ctx, config)
 	if err != nil {
 		return nil, fmt.Errorf("start healthcheck: %w", err)
@@ -85,14 +75,6 @@ func (d *driver) Shutdown(logger klog.Logger) error {
 	}
 	d.helper.Stop()
 	return nil
-}
-
-func (d *driver) installOCIHook() error {
-	data, err := os.ReadFile("/usr/bin/oci-hook")
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(OCIHookPath, data, 0755)
 }
 
 func (d *driver) PrepareResourceClaims(ctx context.Context, claims []*resourceapi.ResourceClaim) (map[types.UID]kubeletplugin.PrepareResult, error) {
